@@ -1,0 +1,35 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf .turbo .next node_modules"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "catalog:",
+    "@zenncore/icons": "workspace:*",
+    "@zenncore/phone": "workspace:*",
+    "@zenncore/utils": "workspace:*",
+    "@zenncore/web": "workspace:*",
+    "motion": "^12.39.0",
+    "next": "^16.2.6",
+    "next-themes": "^0.4.6",
+    "react": "catalog:",
+    "react-dom": "^19.2.6",
+    "react-hook-form": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@zenncore/config": "workspace:*",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "name": "mobile",
+  "version": "0.1.0",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "dev": "APP_VARIANT=development expo start",
+    "dev:a": "APP_VARIANT=development expo start -c --android",
+    "dev:i": "APP_VARIANT=development expo start -c --ios",
+    "android": "APP_VARIANT=development expo run:android",
+    "ios": "APP_VARIANT=development expo run:ios",
+    "typecheck": "tsc --noEmit",
+    "outdated": "bunx expo install --check",
+    "clean": "rm -rf .turbo .expo ios android node_modules",
+    "postinstall": "bun scripts/postinstall.ts"
+  },
+  "dependencies": {
+    "@gorhom/bottom-sheet": "^5.2.14",
+    "@legendapp/list": "^3.0.0-beta.56",
+    "@zenncore/icons": "workspace:*",
+    "@zenncore/mobile": "workspace:*",
+    "@zenncore/utils": "workspace:*",
+    "expo": "catalog:mobile",
+    "expo-dev-client": "~55.0.35",
+    "expo-router": "~55.0.15",
+    "expo-splash-screen": "~55.0.21",
+    "expo-system-ui": "~55.0.18",
+    "react": "catalog:mobile",
+    "react-native": "catalog:mobile",
+    "react-native-gesture-handler": "catalog:mobile",
+    "react-native-keyboard-controller": "^1.21.7",
+    "react-native-reanimated": "catalog:mobile",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.23.0",
+    "react-native-teleport": "catalog:mobile",
+    "react-native-worklets": "catalog:mobile",
+    "uniwind": "catalog:mobile"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/react": "catalog:mobile",
+    "@zenncore/config": "workspace:*",
+    "tailwindcss": "catalog:",
+    "tsx": "^4.22.3",
+    "typescript": "catalog:mobile"
+  }
+}

@@ -2,5 +2,87 @@
 @import "@zenncore/web/config/tailwind";
 
 @theme inline {
-  --font-body: var(--font-geist);
+  --font-body: var(--font-sans);
+}
+
+/*
+  Mediscan medical design tokens — see docs/DESIGN.md.
+  Tokens declared here generate utilities (bg-card, text-link, rounded-card, …).
+*/
+@theme {
+  /* surfaces beyond the base semantic set */
+  --color-card: #151e30;
+  --color-card-hover: #1c2845;
+  /* warm rust used for clinically-significant / linked medical terms */
+  --color-link: #e07b50;
+
+  --radius-card: 12px;
+  --radius-row: 10px;
+}
+
+/*
+  Override the library's placeholder palette with the DESIGN.md dark medical
+  scheme. An unlayered :root wins over the library's @layer theme assignments,
+  so this themes every @zenncore component (Button color="primary"|"error"|… ).
+  Mediscan is dark-only, so light and dark resolve to the same values.
+*/
+:root,
+.light,
+.dark {
+  /* backgrounds — dual-layer dark */
+  --color-background-dimmed: #08111f; /* outer stage / canvas */
+  --color-background: #0d1629; /* app surface (body) */
+  --color-background-rich: #151e30; /* elevated cards */
+
+  /* text */
+  --color-foreground-dimmed: #8a95b0; /* secondary / muted */
+  --color-foreground: #e8eaf0; /* primary text */
+  --color-foreground-rich: #ffffff; /* strongest */
+
+  /* accent — quiet blue-grey chrome (nav pills, hairline borders) */
+  --color-accent-dimmed: #151e30;
+  --color-accent: #1e2a40;
+  --color-accent-rich: #2a3a5a;
+  --color-accent-foreground: #8a95b0;
+
+  /* emphasis — near-black surfaces (device frame) */
+  --color-emphasis-dimmed: #0a0e18;
+  --color-emphasis: #0d1326;
+  --color-emphasis-rich: #151e30;
+  --color-emphasis-foreground: #e8eaf0;
+
+  /* primary — the one fully-saturated hue: indigo-blue */
+  --color-primary-dimmed: #1e2a6a;
+  --color-primary: #3b4ee8;
+  --color-primary-rich: #4b5ef8;
+
+  /* severity — critical (red) */
+  --color-error-dimmed: #4a1513;
+  --color-error: #e53935;
+  --color-error-rich: #ff5a4e;
+  --color-error-foreground: #fca5a5;
+
+  /* severity — moderate / monitor (amber) */
+  --color-warning-dimmed: #4a2e05;
+  --color-warning: #f59e0b;
+  --color-warning-rich: #fbbf24;
+  --color-warning-foreground: #fcd34d;
+
+  /* severity — normal / clear (green) */
+  --color-success-dimmed: #0c3d22;
+  --color-success: #22c55e;
+  --color-success-rich: #4ade80;
+  --color-success-foreground: #86efac;
+
+  /* neutral */
+  --color-neutral-dimmed: #1c2845;
+  --color-neutral: #4a5675;
+  --color-neutral-rich: #8a95b0;
+  --color-neutral-foreground: #e8eaf0;
+
+  /* info — soft secondary blue */
+  --color-info-dimmed: #15233f;
+  --color-info: #3b6ee8;
+  --color-info-rich: #5b8bff;
+  --color-info-foreground: #bcd0ff;
 }

@@ -2,6 +2,13 @@
 
 Welcome to the @zenncore component library documentation.
 
+## Project
+
+| Doc | Description |
+|-----|-------------|
+| [Roadmap](./ROADMAP.md) | Phased plan to build the AI Health Platform features on the Mediscan design system |
+| [Design](./DESIGN.md) | The design bible — visual language, tokens, and components |
+
 ## Packages
 
 | Package | Description |

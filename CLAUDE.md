@@ -4,18 +4,72 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Docs-First Rule (Read Before Coding)
 
-Treat `docs/` as the canonical source of truth for product intent, implementation conventions, and package usage.
+Treat `docs/` as the **canonical source of truth** for design language, coding conventions, and package usage. These docs are **not optional reference** — follow them religiously. If code and docs disagree, follow the docs unless the user explicitly asks otherwise. Never invent a color, spacing value, radius, component API, or convention that the docs already define.
 
-Read in this order before substantial work:
+Read the relevant doc(s) **before** writing or changing code:
 
-1. `docs/index.md` - docs navigation hub.
-2. `docs/context/idea.md` - product scope, flows, architecture, roadmap.
-3. `docs/context/strategy.md` - market, measurement, retention, enterprise strategy.
-4. `docs/context/shopify.md` - Shopify-facing claims/copy/scopes/testing constraints.
-5. `docs/agents/AGENTS-*.md` - coding rules (`style`, `components`, `nextjs`, `packages`, `checklist`).
-6. `docs/web/index.md` and `docs/shared/index.md` - component/package API references.
+| When you are… | Read first (and obey) |
+|---|---|
+| Building or touching **any UI** — colors, spacing, type, layout, motion, components | **`docs/DESIGN.md`** — the design bible. Distilled in [Design System](#design-system--docsdesignmd-follow-religiously) below. |
+| Orienting in the docs | `docs/index.md` — docs navigation hub |
+| Writing TS/JS, React components, or Next.js code | `docs/agents/AGENTS-style.md`, `AGENTS-components.md`, `AGENTS-nextjs.md`, `AGENTS-packages.md` |
+| Wanting a fast rule recap before a PR | `docs/agents/AGENTS-checklist.md` |
+| Using a `@zenncore/*` component, util, or package | `docs/web/index.md`, `docs/shared/index.md`, `docs/mobile/index.md` (per-component pages live alongside) |
 
-If code and docs disagree, follow documented intent unless the user explicitly asks otherwise.
+---
+
+## Design System — `docs/DESIGN.md` (Follow Religiously)
+
+**Every screen, component, and style change must conform to `docs/DESIGN.md`.** It is the single source of truth for the visual language. When it specifies a token, use that token. When in doubt, open `docs/DESIGN.md` and the section that covers what you're building. The rules below are a distillation — the full file wins on any conflict.
+
+### Design principles (never violate)
+- **Clarity over decoration** — every element earns its place by aiding comprehension. No gratuitous decoration.
+- **Gravity without anxiety** — deliberate dark theme; premium and trustworthy, never a harsh clinical terminal.
+- **Progressive disclosure** — layer information: verdict → action → evidence. Most critical takeaway first, detail expandable below.
+- **Weight over size** — establish hierarchy with font weight (SemiBold vs Regular), not large size jumps.
+- **Redundant severity encoding** — severity is always color **+ shape + icon** (diamond/triangle/circle), never color alone — this is an accessibility requirement.
+
+### Tokens (map these to semantic Tailwind tokens — never hard-code hex in components)
+```css
+/* Backgrounds — dual-layer dark */
+--bg-outer:          #08111F;  /* outer stage/canvas, with ambient blue glow */
+--bg-app:            #0D1629;  /* app surface */
+--bg-card:           #151E30;  /* content cards */
+--bg-card-hover:     #1C2845;  /* row hover/active */
+--bg-nav:            rgba(12, 18, 32, 0.75); /* nav + bottom bar use backdrop-blur */
+/* Accent — the only fully saturated hue; everything else desaturated */
+--accent-primary:    #3B4EE8;
+--accent-primary-lt: #4B5EF8;
+/* Severity (color + shape + icon, always together) */
+--severity-critical: #E53935;  /* red, diamond/shield */
+--severity-moderate: #F59E0B;  /* amber, triangle */
+--severity-normal:   #22C55E;  /* green, circle/check */
+/* Text */
+--text-primary:      #E8EAF0;
+--text-secondary:    #8A95B0;
+--text-link:         #E07B50;  /* warm orange-rust, underlined — for significant/linked terms */
+--text-warning:      #F59E0B;
+--text-caption:      #5A6580;
+--glow-blue:         rgba(26, 58, 143, 0.25);
+/* Radius — multi-tier */
+--radius-device: 16px; --radius-card: 12px; --radius-row: 10px; --radius-icon: 10px;
+--radius-pill: 999px;  /* ALL buttons are pills */
+/* Type */
+--font-family: 'Inter', 'DM Sans', system-ui, sans-serif;
+--font-weight-regular: 400; --font-weight-medium: 500; --font-weight-semibold: 600;
+/* Effects */
+--blur-nav: blur(14px); --blur-bar: blur(12px); --shadow-card: 0 2px 12px rgba(0,0,0,0.35);
+```
+
+### Hard rules
+- **All buttons are pills** (`--radius-pill`). Cards `12px`, rows/icons `10px`, device frame `16px`.
+- **Accent blue is the only saturated color.** Primary CTAs only; don't sprinkle it.
+- **Dark, dual-layer backgrounds** with a soft radial blue ambient glow behind the app chrome — never flat black, never bright.
+- **Single geometric sans** (Inter family). Generous line height (~1.5–1.6×) on body/medical text.
+- **Nav and bottom action bar** are semi-transparent with `backdrop-blur` (glassmorphism), consistent at top and bottom.
+- **Motion is subtle and purposeful** — overlay cross-fade ~200ms ease-in / ~150ms ease-out; staggered fade-up card entrance (~300ms, 100ms stagger). Use the `Motion` library (already in the stack).
+
+These map onto the existing **"Styling — semantic Tailwind tokens only"** rule: express every DESIGN.md token through `text-primary`, `bg-card`, `bg-background`, `rounded-*`, etc. — never raw hex or `text-gray-500` in a component.
 
 
 ---
@@ -179,7 +233,7 @@ import type * as Products from "@/server/app/product";
 All forms are defined via Zod schema + `field()` descriptors. No inline `<input>` or manual react-hook-form registration.
 
 ### Styling — semantic Tailwind tokens only
-Use `text-primary`, `bg-background`, `border-accent-foreground`, etc. Never raw colors like `text-gray-500` or `bg-white`.
+Use `text-primary`, `bg-background`, `border-accent-foreground`, etc. Never raw colors like `text-gray-500` or `bg-white`. Every color, radius, weight, and motion value must trace back to **`docs/DESIGN.md`** (see [Design System](#design-system--docsdesignmd-follow-religiously)). When a needed token isn't defined, add it to the theme to match DESIGN.md rather than hard-coding hex in a component.
 
 ### Components — Namespace pattern
 ```tsx

@@ -15,9 +15,80 @@
   --color-card-hover: #1c2845;
   /* warm rust used for clinically-significant / linked medical terms */
   --color-link: #e07b50;
+  /* micro-copy / hint captions — DESIGN.md §2.5 */
+  --color-caption: #5a6580;
+  /* ambient radial glow on the outer stage — DESIGN.md §9 */
+  --color-glow: rgba(26, 58, 143, 0.25);
 
+  /* radius scale — DESIGN.md §4 / §16 (supersede inline rounded-[16px] etc.) */
+  --radius-device: 16px;
   --radius-card: 12px;
   --radius-row: 10px;
+  --radius-icon: 10px;
+  --radius-pill: 999px;
+
+  /* elevation + glass — DESIGN.md §16 */
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.35);
+  --blur-nav: 14px;
+  --blur-bar: 12px;
+}
+
+/*
+  Staggered fade-up entrance — DESIGN.md §14. Cards opt in with `animate-fade-up`
+  and an inline `animationDelay` for the 100ms stagger. `both` holds the pre-roll
+  opacity so streamed-in content never flashes before its delay.
+*/
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-fade-up {
+  animation: fade-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Ambient motion for the sign-in aurora — drifting glows + floating watermarks. */
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(5%, -7%, 0) scale(1.12);
+  }
+  66% {
+    transform: translate3d(-6%, 5%, 0) scale(0.94);
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate3d(5%, -6%, 0) rotate(3deg);
+  }
+  50% {
+    transform: translate3d(-4%, 5%, 0) rotate(-2.5deg);
+  }
+  75% {
+    transform: translate3d(6%, 2%, 0) rotate(1.5deg);
+  }
+}
+
+@utility animate-drift {
+  animation: drift 22s ease-in-out infinite;
+}
+
+@utility animate-float-slow {
+  animation: float-slow 18s ease-in-out infinite;
 }
 
 /*

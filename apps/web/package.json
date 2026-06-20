@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "catalog:",
+    "@tanstack/react-table": "^8.21.3",
     "@zenncore/icons": "workspace:*",
     "@zenncore/phone": "workspace:*",
     "@zenncore/utils": "workspace:*",

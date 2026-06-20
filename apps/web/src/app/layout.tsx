@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
+import type { PropsWithChildren } from "react";
 
 const geist = Geist({
   variable: "--font-geist",
@@ -9,11 +10,12 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "zenncore",
-  description: "A modern React UI library with Tailwind CSS support",
+  title: "Mediscan — AI diagnostic imaging",
+  description:
+    "Clinical AI imaging for hospitals: upload, AI-assisted reads, risk-ranked worklist, and multi-doctor collaboration.",
 };
 
-export default ({ children }: LayoutProps<"/">) => {
+export default ({ children }: PropsWithChildren) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geist.variable} bg-background font-body antialiased`}>

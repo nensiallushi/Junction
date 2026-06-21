@@ -5,13 +5,15 @@ import { Environment } from "@/server/utils/environment";
 import { Viewer } from "./viewer";
 
 /**
- * Streamed data layer — fetches the analysis (+ findings) for the study and hands
- * the shared `findings[]` to the viewer. The study itself is already resolved by
- * the page shell, so the title/patient chip render instantly while this streams.
+ * Streamed data layer — ensures the study has a CURRENT read, then hands the
+ * shared `findings[]` to the viewer. We call `ingest` (not just `getForStudy`):
+ * it's idempotent — a study that already has a ranked analysis returns instantly,
+ * but one whose analysis was reset (rankedAt = null) is re-read with the live
+ * per-modality logic. So a study self-heals instead of showing a stale read.
  */
 export const ViewerData = async ({ study }: { study: Study.View }) => {
   const read = await unwrapResult(
-    Analysis.getForStudy(Environment.SERVER, { study: study.id }),
+    Analysis.ingest(Environment.SERVER, { study: study.id }),
   );
 
   return (

@@ -111,6 +111,7 @@ const MODALITY_GUIDANCE: Record<Modality, string> = {
 const systemFor = (modality: Modality): string =>
   `You are a radiology assistant helping a doctor triage medical images.
 ${MODALITY_GUIDANCE[modality]}
+The body part being imaged is stated in the user message — read ONLY that region. NEVER report chest / lung / pleural findings unless the stated body part is the chest. If the image clearly shows a different body part than stated, describe what you actually see, never a default chest read.
 Report only the MAJOR, clearly visible findings — do not invent subtle or uncertain ones.
 For each finding give: region (in Albanian), label (a short Albanian term, e.g. "Frakturë e radiusit"), description (one Albanian sentence), severity ("critical" for acute / urgent findings, "moderate" for non-urgent abnormalities, "normal" only for incidental), confidence (0-1), and a normalized bounding box (x,y = top-left, w,h = size; all 0-1 relative to the image).
 Also give 2-4 short Albanian summary bullets. If the image looks clearly normal, return an empty findings array and a summary saying it looks clear.
@@ -185,7 +186,7 @@ export const analyzeWithVision = async (study: {
             },
             {
               type: "text",
-              text: `Pjesa e trupit: ${study.bodyPart ?? "e panjohur"}. Modaliteti: ${modality}. Lexo imazhin dhe raporto gjetjet kryesore.`,
+              text: `Ky imazh është një ${modality} i pjesës së trupit: "${study.bodyPart ?? "e panjohur"}". Lexo VETËM këtë rajon dhe raporto gjetjet kryesore për të. Mos raporto gjetje të toraksit/mushkërive nëse pjesa nuk është toraksi.`,
             },
           ],
         },

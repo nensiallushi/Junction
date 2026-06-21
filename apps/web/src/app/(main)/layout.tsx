@@ -5,12 +5,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 import { HospitalIcon } from "@/components/medical-icons";
-import { initials, roleLabel } from "@/lib/medical";
 import * as Authentication from "@/server/app/authentication";
 import * as Organization from "@/server/app/organization";
 import { Environment } from "@/server/utils/environment";
 import { AppNav } from "./_components/app-nav";
 import { ThemeProvider, ThemeToggle } from "./_components/theme";
+import { UserMenu } from "./_components/user-menu";
 
 export default async ({ children }: PropsWithChildren) => {
   // gate: no session cookie → straight to the sign-in account picker.
@@ -63,19 +63,7 @@ export default async ({ children }: PropsWithChildren) => {
                       Imazhe të reja
                     </Button>
                   )}
-                  <div className="flex items-center gap-2 rounded-pill border border-accent/60 bg-accent/40 py-1 pr-4 pl-1 transition-colors hover:bg-accent/60">
-                    <span className="flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-primary-rich to-primary font-semibold text-white text-xs">
-                      {initials(user.name)}
-                    </span>
-                    <div className="hidden sm:block">
-                      <p className="font-medium text-foreground text-xs">
-                        {user.name}
-                      </p>
-                      <p className="text-caption text-xs">
-                        {roleLabel(user.role)}
-                      </p>
-                    </div>
-                  </div>
+                  <UserMenu user={user} />
                 </div>
               </header>
 

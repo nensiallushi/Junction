@@ -24,7 +24,7 @@
  * overlay from the image otherwise (ROADMAP "Risks", point 2).
  */
 
-import type { Modality, Severity } from "@/lib/medical";
+import { type Modality, modalityLabel, type Severity } from "@/lib/medical";
 import type { Geometry, RiskScoreHistory } from "@/server/database/schema";
 import { analyzeWithClassifier } from "./classifier";
 import { analyzeWithCxr } from "./cxr";
@@ -184,6 +184,54 @@ const pick = (seed: string): (typeof TEMPLATES)[number] => {
   return TEMPLATES[sum % TEMPLATES.length] as (typeof TEMPLATES)[number];
 };
 
+// The demo templates above are CHEST findings — only valid for a chest study.
+const CHEST_BODY = [
+  "toraks",
+  "kraharor",
+  "gjoks",
+  "mushk",
+  "pulmon",
+  "chest",
+  "lung",
+];
+const isChestStudy = (bodyPart?: string): boolean =>
+  bodyPart !== undefined &&
+  CHEST_BODY.some((keyword) => bodyPart.toLowerCase().includes(keyword));
+
+// Honest, body-part-correct placeholder for when NO real read ran (no model,
+// no API key). Never fabricates pathology and never mislabels the region — so an
+// ultrasound of the abdomen is never reported as a lung finding.
+const placeholder = (study: {
+  modality?: Modality;
+  bodyPart?: string;
+}): AnalysisResult => {
+  const region = study.bodyPart?.trim() || "Përgjithshëm";
+  const modality = modalityLabel(study.modality ?? "other");
+  const finding: FindingDraft = {
+    region,
+    severity: "moderate",
+    label: "Pa lexim automatik",
+    description: `Nuk u krye lexim automatik me AI për këtë ${modality} të "${region}". Kërkon lexim manual nga mjeku (aktivizo ANTHROPIC_API_KEY për lexim me AI).`,
+    confidence: 0,
+    displayOrder: 1,
+    geometry: contour([
+      [0.15, 0.15],
+      [0.85, 0.15],
+      [0.85, 0.85],
+      [0.15, 0.85],
+    ]),
+  };
+  return {
+    summary: [
+      `Pa lexim automatik për "${region}" (${modality}).`,
+      "Lexo imazhin manualisht ose aktivizo lexuesin AI.",
+    ],
+    findings: [finding],
+    risk: score([finding]),
+    modelRef: "stub-v0",
+  };
+};
+
 export const analyze = async (study: {
   id: string;
   imageUrl?: string;
@@ -202,12 +250,17 @@ export const analyze = async (study: {
   const vision = await analyzeWithVision(study);
   if (vision) return vision;
 
-  // 4. Fallback: deterministic template read (seed data, no model configured).
-  const template = pick(study.id);
-  return {
-    summary: template.summary,
-    findings: template.findings,
-    risk: score(template.findings),
-    modelRef: "stub-v0",
-  };
+  // 4. Fallback (no model / no API key). Use the CHEST demo templates ONLY for a
+  // chest study; for any other body part return an honest, region-correct note
+  // instead of fabricating lung findings.
+  if (isChestStudy(study.bodyPart)) {
+    const template = pick(study.id);
+    return {
+      summary: template.summary,
+      findings: template.findings,
+      risk: score(template.findings),
+      modelRef: "stub-v0",
+    };
+  }
+  return placeholder(study);
 };

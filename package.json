@@ -12,7 +12,10 @@
     "build:mobile": "turbo run build --filter=./apps/mobile...",
     "build:packages": "turbo build --filter=@zenncore/*",
     "dev": "turbo run dev",
-    "dev:web": "turbo run dev --filter=./apps/web...",
+    "dev:web": "concurrently -n web,cxr -c cyan,green \"turbo run dev --filter=./apps/web... --ui=stream\" \"node scripts/cxr.mjs\"",
+    "dev:web:solo": "turbo run dev --filter=./apps/web...",
+    "cxr": "node scripts/cxr.mjs",
+    "cxr:setup": "node scripts/cxr.mjs setup",
     "dev:mobile": "turbo run dev --filter=./apps/mobile...",
     "dev:packages": "turbo dev --filter=@zenncore/*",
     "lint": "biome check --write",
@@ -23,6 +26,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",
     "@turbo/gen": "^2.9.14",
+    "concurrently": "^10.0.3",
     "turbo": "^2.9.14"
   },
   "engines": {

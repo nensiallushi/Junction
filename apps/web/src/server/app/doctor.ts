@@ -63,3 +63,19 @@ export const disable = withAuthorization(
   },
   { roles: ["hospital_admin"], label: "Doctor.disable" },
 );
+
+/** Admin-only hard delete. Org-scoped; an admin can't delete their own account. */
+export const destroy = withAuthorization(
+  async (
+    _environment,
+    session,
+    { doctor: id }: { doctor: string },
+  ): Promise<boolean> => {
+    if (id === session.user.id) return false;
+    const doctor = await doctors.get(id);
+    if (!doctor || doctor.organizationId !== session.organizationId)
+      return false;
+    return doctors.destroy(id);
+  },
+  { roles: ["hospital_admin"], label: "Doctor.destroy" },
+);

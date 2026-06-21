@@ -1,18 +1,35 @@
 /**
- * AI analysis stub seam (ROADMAP Part C).
+ * AI analysis seam (ROADMAP Part C).
  *
  * `analyze(study)` returns a DESIGN-style read — conclusions + findings with
  * normalized 0–1 contour geometry + a risk score. The `analysis` model never
- * imports a provider directly: it calls this, then persists. A real Azure AI
- * SDK + DICOM ingest swaps in behind the same signature later.
+ * imports a provider directly: it calls this, then persists.
+ *
+ * Readers are routed per modality, first hit wins:
+ *   1. `analyzeWithCxr` — TorchXRayVision SPECIALIST for chest X-rays, when
+ *      `CXR_SERVICE_URL` is set (trained on chest radiographs → most accurate
+ *      for that one modality).
+ *   2. `analyzeWithClassifier` — pretrained, dataset-specific SPECIALIST models
+ *      for brain MRI / breast ultrasound / chest CT via `IMAGING_SERVICE_URL`
+ *      (each fires only when its model env var + body part match).
+ *   3. `analyzeWithVision` — Claude vision with a MODALITY-SPECIFIC prompt
+ *      (everything else: other CT/MRI/ultrasound, non-chest X-ray), when
+ *      `ANTHROPIC_API_KEY` is set.
+ *   4. the deterministic template below — so the app always works.
+ *
+ * Another per-modality model plugs in as a new `analyzeWith*` reader routed
+ * here, same shape.
  *
  * Coordinates MUST stay normalized 0–1 — zoom / responsive panels desync the
  * overlay from the image otherwise (ROADMAP "Risks", point 2).
  */
 
-import type { Severity } from "@/lib/medical";
+import type { Modality, Severity } from "@/lib/medical";
 import type { Geometry, RiskScoreHistory } from "@/server/database/schema";
+import { analyzeWithClassifier } from "./classifier";
+import { analyzeWithCxr } from "./cxr";
 import { score } from "./risk";
+import { analyzeWithVision } from "./vision";
 
 export type FindingDraft = {
   region: string;
@@ -169,7 +186,23 @@ const pick = (seed: string): (typeof TEMPLATES)[number] => {
 
 export const analyze = async (study: {
   id: string;
+  imageUrl?: string;
+  modality?: Modality;
+  bodyPart?: string;
 }): Promise<AnalysisResult> => {
+  // 1. Chest-X-ray specialist model (fires only for chest X-rays).
+  const cxr = await analyzeWithCxr(study);
+  if (cxr) return cxr;
+
+  // 2. Dataset-specific specialist (brain MRI / breast US / chest CT).
+  const specialist = await analyzeWithClassifier(study);
+  if (specialist) return specialist;
+
+  // 3. Modality-specialized vision read (everything else).
+  const vision = await analyzeWithVision(study);
+  if (vision) return vision;
+
+  // 4. Fallback: deterministic template read (seed data, no model configured).
   const template = pick(study.id);
   return {
     summary: template.summary,

@@ -6,6 +6,7 @@
  */
 
 import { cn } from "@zenncore/utils";
+import Image from "next/image";
 import type { ComponentProps, JSX } from "react";
 
 type IconProps = ComponentProps<"svg">;
@@ -26,6 +27,47 @@ const Icon = ({ className, children, ...props }: IconProps): JSX.Element => (
   </svg>
 );
 
+// --- Actions ------------------------------------------------------------------
+
+export const PlusIcon = (props: IconProps): JSX.Element => (
+  <Icon {...props}>
+    <path d="M12 5v14M5 12h14" />
+  </Icon>
+);
+
+export const TrashIcon = (props: IconProps): JSX.Element => (
+  <Icon {...props}>
+    <path d="M4 7h16M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3M10 11v6M14 11v6M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13" />
+  </Icon>
+);
+
+export const PharmacyIcon = (props: IconProps): JSX.Element => (
+  <Icon {...props}>
+    <rect x="4" y="4" width="16" height="16" rx="3.5" />
+    <path d="M12 9v6M9 12h6" />
+  </Icon>
+);
+
+export const SunIcon = (props: IconProps): JSX.Element => (
+  <Icon {...props}>
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+  </Icon>
+);
+
+export const MoonIcon = (props: IconProps): JSX.Element => (
+  <Icon {...props}>
+    <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+  </Icon>
+);
+
+export const SearchIcon = (props: IconProps): JSX.Element => (
+  <Icon {...props}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m20 20-3.6-3.6" />
+  </Icon>
+);
+
 // --- Brand mark ---------------------------------------------------------------
 
 export const MediscanMark = ({
@@ -33,28 +75,31 @@ export const MediscanMark = ({
 }: {
   className?: string;
 }): JSX.Element => (
-  <svg
-    viewBox="0 0 24 24"
-    className={cn("size-8", className)}
-    aria-hidden
-    fill="none"
-  >
-    <rect
-      x="1.5"
-      y="1.5"
-      width="21"
-      height="21"
-      rx="6"
-      className="fill-primary"
+  <>
+    {/* dark shell (and the always-dark sign-in page) */}
+    <Image
+      src="/logoJunction.png"
+      alt="Junction"
+      width={64}
+      height={64}
+      priority
+      className={cn(
+        "size-8 rounded-md object-contain [.light_&]:hidden",
+        className,
+      )}
     />
-    <path
-      d="M5 13h2.5l1.5-5 3 9 2-7 1.5 3H19"
-      stroke="white"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+    {/* light shell only */}
+    <Image
+      src="/logoLight.png"
+      alt="Junction"
+      width={64}
+      height={64}
+      className={cn(
+        "hidden size-8 rounded-md object-contain [.light_&]:block",
+        className,
+      )}
     />
-  </svg>
+  </>
 );
 
 // --- Navigation ---------------------------------------------------------------
@@ -126,6 +171,21 @@ export const CalendarIcon = (props: IconProps): JSX.Element => (
     <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
     <path d="M3.5 9.5h17M8 3.5v3M16 3.5v3" />
   </Icon>
+);
+
+export const WhatsappIcon = ({
+  className,
+}: {
+  className?: string;
+}): JSX.Element => (
+  <svg
+    viewBox="0 0 24 24"
+    className={cn("size-4", className)}
+    fill="currentColor"
+    aria-hidden
+  >
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67c2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.26-8.24Zm-3.6 4.42c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.43 1.03 2.6.13.17 1.77 2.7 4.3 3.79.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.48-.6 1.69-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.16-.48-.29-.25-.12-1.48-.73-1.71-.81-.23-.08-.4-.12-.56.13-.17.25-.64.81-.79.97-.15.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.48-1.38-1.73-.15-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.55-1.37-.77-1.87-.2-.48-.41-.42-.56-.43-.14 0-.31-.01-.48-.01Z" />
+  </svg>
 );
 
 // --- Specialty glyphs (Suggested Appointments) --------------------------------

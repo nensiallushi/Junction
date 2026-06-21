@@ -1,10 +1,12 @@
 import { unwrapResult } from "@zenncore/utils";
 import { HospitalIcon } from "@/components/medical-icons";
 import { StudyListRow, StudyRowEmpty } from "@/components/study-row";
+import { modalityLabel } from "@/lib/medical";
 import * as Organization from "@/server/app/organization";
 import * as Patient from "@/server/app/patient";
 import * as Study from "@/server/app/study";
 import { Environment } from "@/server/utils/environment";
+import { DeleteStudyButton } from "./delete-study-button";
 
 export const PatientStudies = async ({ patient }: { patient: string }) => {
   const studies = await unwrapResult(
@@ -21,7 +23,17 @@ export const PatientStudies = async ({ patient }: { patient: string }) => {
       </header>
       <div className="flex flex-col">
         {studies.length > 0 ? (
-          studies.map((study) => <StudyListRow key={study.id} study={study} />)
+          studies.map((study) => (
+            <div key={study.id} className="flex items-center gap-1 pr-2">
+              <div className="min-w-0 flex-1">
+                <StudyListRow study={study} />
+              </div>
+              <DeleteStudyButton
+                study={study.id}
+                label={`${modalityLabel(study.modality)} · ${study.bodyPart}`}
+              />
+            </div>
+          ))
         ) : (
           <StudyRowEmpty>Ende asnjë studim për këtë pacient.</StudyRowEmpty>
         )}

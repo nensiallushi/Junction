@@ -1,5 +1,5 @@
-import { cn } from "@zenncore/utils";
 import { XIcon } from "@zenncore/icons";
+import { cn } from "@zenncore/utils";
 import type { Route } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -24,7 +24,9 @@ export default async ({
     if (value) params.set("status", value);
     if (part) params.set("bodyPart", part);
     const query = params.toString();
-    return (query ? `/dashboard/worklist?${query}` : "/dashboard/worklist") as Route;
+    return (
+      query ? `/dashboard/worklist?${query}` : "/dashboard/worklist"
+    ) as Route;
   };
 
   const filters: { value?: StudyStatus; label: string }[] = [
@@ -63,7 +65,9 @@ export default async ({
         {part && (
           <Link
             href={
-              (active ? `/dashboard/worklist?status=${active}` : "/dashboard/worklist") as Route
+              (active
+                ? `/dashboard/worklist?status=${active}`
+                : "/dashboard/worklist") as Route
             }
             className="ml-auto flex items-center gap-1.5 rounded-pill bg-primary/15 px-3 py-1 font-medium text-primary-rich text-sm transition-colors hover:bg-primary/25"
           >
@@ -73,7 +77,10 @@ export default async ({
         )}
       </div>
 
-      <Suspense key={`${active ?? "all"}-${part ?? ""}`} fallback={<WorklistSkeleton />}>
+      <Suspense
+        key={`${active ?? "all"}-${part ?? ""}`}
+        fallback={<WorklistSkeleton />}
+      >
         <WorklistTable status={active} bodyPart={part} />
       </Suspense>
     </div>

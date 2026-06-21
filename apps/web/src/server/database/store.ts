@@ -10,10 +10,13 @@
  * signature viewer has overlays to sync.
  */
 
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import type {
   Analysis,
   ChannelMessage,
   Consult,
+  Credential,
   DirectMessage,
   Doctor,
   Finding,
@@ -21,6 +24,7 @@ import type {
   Message,
   Organization,
   Patient,
+  Prescription,
   Report,
   RiskScoreHistory,
   Study,
@@ -40,15 +44,39 @@ export const DEMO_USER_ID = "doc_okafor";
 const organizations: Organization[] = [
   {
     id: "org_helsinki",
-    name: "Spitali Nënë Tereza",
-    slug: "spitali-nene-tereza",
+    name: "QSUT “Nënë Tereza”",
+    slug: "qsut-nene-tereza",
     type: "public",
   },
   {
     id: "org_tampere",
-    name: "Spitali Rajonal i Durrësit",
-    slug: "spitali-rajonal-durres",
+    name: "Spitali Universitar i Traumës",
+    slug: "spitali-universitar-traumes",
     type: "public",
+  },
+  {
+    id: "org_geraldine",
+    name: "Spitali Universitar Obstetrik-Gjinekologjik “Mbretëresha Geraldinë”",
+    slug: "su-mbreteresha-geraldine",
+    type: "public",
+  },
+  {
+    id: "org_gliozheni",
+    name: "Spitali Universitar Obstetrik-Gjinekologjik “Koço Gliozheni”",
+    slug: "su-koco-gliozheni",
+    type: "public",
+  },
+  {
+    id: "org_ndroqi",
+    name: "Spitali Universitar “Shefqet Ndroqi”",
+    slug: "su-shefqet-ndroqi",
+    type: "public",
+  },
+  {
+    id: "org_pharmacy",
+    name: "Farmacia Qendrore",
+    slug: "farmacia-qendrore",
+    type: "pharmacy",
   },
 ];
 
@@ -103,6 +131,36 @@ const doctors: Doctor[] = [
     specialty: "Mjekësi interne",
     avatarUrl: null,
   },
+  {
+    id: "doc_kola",
+    name: "Dr. Ardit Kola",
+    email: "a.kola@spitalint.al",
+    role: "doctor",
+    organizationId: "org_helsinki",
+    status: "active",
+    specialty: "Ortopedi",
+    avatarUrl: null,
+  },
+  {
+    id: "doc_dervishi",
+    name: "Dr. Suela Dervishi",
+    email: "s.dervishi@spitalint.al",
+    role: "doctor",
+    organizationId: "org_helsinki",
+    status: "active",
+    specialty: "Neurologji",
+    avatarUrl: null,
+  },
+  {
+    id: "doc_pharma",
+    name: "Farm. Drita Krasniqi",
+    email: "d.krasniqi@farmacia.al",
+    role: "pharmacist",
+    organizationId: "org_pharmacy",
+    status: "active",
+    specialty: "Farmaci",
+    avatarUrl: null,
+  },
 ];
 
 /**
@@ -113,6 +171,9 @@ export const CREDENTIALS: Record<string, string> = {
   doc_okafor: "daniel123",
   doc_lindgren: "elira123",
   doc_virtanen: "besnik123",
+  doc_kola: "ardit123",
+  doc_dervishi: "suela123",
+  doc_pharma: "farma123",
 };
 
 const patients: Patient[] = [
@@ -677,10 +738,46 @@ const directMessages: DirectMessage[] = [
  * arrays in place (a `push`/`splice` on a `const` collection is fine — the
  * binding never changes). One Drizzle table will replace each collection.
  */
+const prescriptions: Prescription[] = [
+  {
+    id: "rx_01",
+    organizationId: "org_helsinki",
+    patientId: "pat_01",
+    patientName: "Erion Meta",
+    doctorId: "doc_virtanen",
+    doctorName: "Dr. Besnik Shala",
+    studyId: null,
+    medication: "Antibiotik",
+    note: "Kurë 7-ditore për infeksion respirator.",
+    createdAt: hours(20),
+    dispensed: true,
+  },
+  {
+    id: "rx_02",
+    organizationId: "org_helsinki",
+    patientId: "pat_05",
+    patientName: "Eni Allushi",
+    doctorId: "doc_lindgren",
+    doctorName: "Dr. Elira Hoxha",
+    studyId: null,
+    medication: "Kortikosteroid",
+    note: "Frymëmarrje me inhalator, sipas nevojës.",
+    createdAt: hours(6),
+    dispensed: false,
+  },
+];
+
+// Credentials live in the store (not a static map) so registered accounts
+// persist and can sign in after a restart. Seeded from CREDENTIALS above.
+const credentials: Credential[] = Object.entries(CREDENTIALS).map(
+  ([id, password]) => ({ id, password }),
+);
+
 export const db = {
   organizations,
   doctors,
   patients,
+  credentials,
   studies,
   images,
   analyses,
@@ -691,6 +788,57 @@ export const db = {
   messages,
   channelMessages,
   directMessages,
+  prescriptions,
 } as const;
 
 export type Database = typeof db;
+
+// ── File-backed persistence (dev) ───────────────────────────────────────────
+// The seed data above is the default. On load we overlay the last saved
+// snapshot (adds, edits, deletes, finalized reports), and every mutation
+// re-saves — so state survives a server restart. Stored under `.next/cache`
+// (git-ignored, outside the file watcher, kept across restarts). Override the
+// path with MEDISCAN_DATA_FILE. A real Postgres swap removes this seam entirely.
+const SNAPSHOT =
+  process.env["MEDISCAN_DATA_FILE"] ??
+  join(process.cwd(), ".next", "cache", "mediscan-store.json");
+
+// Bump whenever the seed shape changes — a mismatched snapshot is ignored and
+// the new seed data takes over (so new accounts/columns appear after an update).
+const SCHEMA_VERSION = 3;
+
+type Snapshot = { __version?: number } & Partial<
+  Record<keyof typeof db, { id: string }[]>
+>;
+
+const hydrate = (): void => {
+  try {
+    if (!existsSync(SNAPSHOT)) return;
+    const snapshot = JSON.parse(readFileSync(SNAPSHOT, "utf8")) as Snapshot;
+    if (snapshot.__version !== SCHEMA_VERSION) return; // stale schema → re-seed
+    for (const key of Object.keys(db) as (keyof typeof db)[]) {
+      const rows = snapshot[key];
+      if (!Array.isArray(rows)) continue;
+      const collection = db[key] as unknown as { id: string }[];
+      collection.splice(0, collection.length, ...rows);
+    }
+  } catch {
+    // Corrupt / stale snapshot — fall back to the seed data.
+  }
+};
+
+/** Persist the whole mutable store. Called by the repository after every write. */
+export const persist = (): void => {
+  try {
+    mkdirSync(dirname(SNAPSHOT), { recursive: true });
+    writeFileSync(
+      SNAPSHOT,
+      JSON.stringify({ __version: SCHEMA_VERSION, ...db }),
+      "utf8",
+    );
+  } catch {
+    // Best-effort — never fail a request because the snapshot couldn't be written.
+  }
+};
+
+hydrate();

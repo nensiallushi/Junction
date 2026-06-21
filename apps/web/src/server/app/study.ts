@@ -3,6 +3,7 @@
 import type { Modality } from "@/lib/medical";
 import type { Patient, Study } from "@/server/database/schema";
 import { db } from "@/server/database/store";
+import { purgeStudy } from "@/server/utils/cascade";
 import { withAuthentication } from "@/server/utils/context";
 import { repository } from "@/server/utils/repository";
 
@@ -148,4 +149,19 @@ export const create = withAuthentication(
     });
   },
   "Study.create",
+);
+
+/** Delete a study (the "report") and everything that hangs off it. Org-scoped. */
+export const destroy = withAuthentication(
+  async (
+    _environment,
+    session,
+    { study: id }: { study: string },
+  ): Promise<boolean> => {
+    const study = await studies.get(id);
+    if (!study || study.organizationId !== session.organizationId) return false;
+    await purgeStudy(id);
+    return true;
+  },
+  "Study.destroy",
 );

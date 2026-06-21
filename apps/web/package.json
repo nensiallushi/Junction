@@ -10,7 +10,10 @@
     "clean": "rm -rf .turbo .next node_modules"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.105.0",
     "@hookform/resolvers": "catalog:",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
     "@tanstack/react-table": "^8.21.3",
     "@zenncore/icons": "workspace:*",
     "@zenncore/phone": "workspace:*",
@@ -22,6 +25,7 @@
     "react": "catalog:",
     "react-dom": "^19.2.6",
     "react-hook-form": "catalog:",
+    "three": "^0.184.0",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -29,6 +33,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@types/three": "^0.184.1",
     "@zenncore/config": "workspace:*",
     "tailwindcss": "catalog:",
     "typescript": "catalog:"

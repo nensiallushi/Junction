@@ -98,7 +98,6 @@
   Mediscan is dark-only, so light and dark resolve to the same values.
 */
 :root,
-.light,
 .dark {
   /* backgrounds — dual-layer dark */
   --color-background-dimmed: #08111f; /* outer stage / canvas */
@@ -156,4 +155,75 @@
   --color-info: #3b6ee8;
   --color-info-rich: #5b8bff;
   --color-info-foreground: #bcd0ff;
+}
+
+/*
+  Light theme — applied only inside the app shell (the `.light` class is set on
+  the post-login layout, never on the sign-in page, which stays dark by design).
+  Same semantic tokens, inverted for a clean light medical surface.
+*/
+.light {
+  --color-card: #ffffff;
+  --color-card-hover: #eef2f8;
+  --color-link: #c2410c;
+  --color-caption: #6b7280;
+  --color-glow: rgba(59, 78, 232, 0.12);
+  --shadow-card: 0 2px 12px rgba(15, 23, 42, 0.08);
+
+  /* backgrounds — light dual-layer */
+  --color-background-dimmed: #eef2f8;
+  --color-background: #f6f8fc;
+  --color-background-rich: #ffffff;
+
+  /* text */
+  --color-foreground-dimmed: #64748b;
+  --color-foreground: #0f172a;
+  --color-foreground-rich: #000000;
+
+  /* accent — quiet light chrome */
+  --color-accent-dimmed: #eef2f8;
+  --color-accent: #e2e8f0;
+  --color-accent-rich: #cbd5e1;
+  --color-accent-foreground: #64748b;
+
+  /* emphasis — light frame */
+  --color-emphasis-dimmed: #e2e8f0;
+  --color-emphasis: #eef2f8;
+  --color-emphasis-rich: #ffffff;
+  --color-emphasis-foreground: #0f172a;
+
+  /* primary — same indigo, light tint */
+  --color-primary-dimmed: #dde3ff;
+  --color-primary: #3b4ee8;
+  --color-primary-rich: #4b5ef8;
+
+  /* severity — critical */
+  --color-error-dimmed: #fee2e2;
+  --color-error: #dc2626;
+  --color-error-rich: #ef4444;
+  --color-error-foreground: #991b1b;
+
+  /* severity — moderate */
+  --color-warning-dimmed: #fef3c7;
+  --color-warning: #d97706;
+  --color-warning-rich: #f59e0b;
+  --color-warning-foreground: #92400e;
+
+  /* severity — normal */
+  --color-success-dimmed: #dcfce7;
+  --color-success: #16a34a;
+  --color-success-rich: #22c55e;
+  --color-success-foreground: #166534;
+
+  /* neutral */
+  --color-neutral-dimmed: #e2e8f0;
+  --color-neutral: #94a3b8;
+  --color-neutral-rich: #475569;
+  --color-neutral-foreground: #0f172a;
+
+  /* info */
+  --color-info-dimmed: #dbeafe;
+  --color-info: #2563eb;
+  --color-info-rich: #3b82f6;
+  --color-info-foreground: #1e40af;
 }

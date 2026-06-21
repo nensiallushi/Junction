@@ -10,6 +10,7 @@ import {
 import type { DoctorStatus } from "@/lib/medical";
 import { doctorStatusLabel, initials, roleLabel } from "@/lib/medical";
 import type * as Doctor from "@/server/app/doctor";
+import { DeleteDoctorButton } from "./delete-doctor-button";
 
 type Row = Doctor.Type & { _id: string };
 
@@ -22,7 +23,8 @@ const STATUS: Record<DoctorStatus, string> = {
 const columns: ColumnDef<Row>[] = [
   {
     accessorKey: "name",
-    header: "Mjeku",
+    // indent past the avatar so the header sits above the names, not the initials
+    header: () => <span className="block pl-10">Mjeku</span>,
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent font-semibold text-foreground-dimmed text-xs">
@@ -61,31 +63,63 @@ const columns: ColumnDef<Row>[] = [
   },
   {
     accessorKey: "status",
-    header: "Statusi",
+    header: () => <span className="block text-right">Statusi</span>,
     cell: ({ row }) => (
-      <span
-        className={cn(
-          "rounded-pill px-2 py-1 font-medium text-xs",
-          STATUS[row.original.status],
-        )}
-      >
-        {doctorStatusLabel(row.original.status)}
-      </span>
+      <div className="flex justify-end">
+        <span
+          className={cn(
+            "rounded-pill px-2 py-1 font-medium text-xs",
+            STATUS[row.original.status],
+          )}
+        >
+          {doctorStatusLabel(row.original.status)}
+        </span>
+      </div>
     ),
   },
 ];
 
-export const DoctorsDataTable = ({ rows }: { rows: Row[] }) => (
-  <DataTableProvider rows={rows} columns={columns} pageSize={20}>
-    <div className="overflow-hidden rounded-card border border-accent bg-card/60">
-      <DataTable
-        classList={{
-          "body-row": "transition-colors hover:bg-card-hover",
-          "body-cell": "py-3",
-        }}
-      >
-        <DataTableEmpty>Ende asnjë mjek.</DataTableEmpty>
-      </DataTable>
-    </div>
-  </DataTableProvider>
-);
+export const DoctorsDataTable = ({
+  rows,
+  currentUserId,
+}: {
+  rows: Row[];
+  currentUserId: string;
+}) => {
+  const allColumns: ColumnDef<Row>[] = [
+    ...columns,
+    {
+      id: "actions",
+      header: () => <span className="block text-right">Veprime</span>,
+      cell: ({ row }) => (
+        <div className="flex justify-end">
+          {row.original.id === currentUserId ? (
+            <span className="flex size-8 items-center justify-center text-caption text-xs">
+              Ti
+            </span>
+          ) : (
+            <DeleteDoctorButton
+              doctor={row.original.id}
+              name={row.original.name}
+            />
+          )}
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <DataTableProvider rows={rows} columns={allColumns} pageSize={20}>
+      <div className="overflow-hidden rounded-card border border-accent bg-card/60">
+        <DataTable
+          classList={{
+            "body-row": "transition-colors hover:bg-card-hover",
+            "body-cell": "py-3",
+          }}
+        >
+          <DataTableEmpty>Ende asnjë mjek.</DataTableEmpty>
+        </DataTable>
+      </div>
+    </DataTableProvider>
+  );
+};

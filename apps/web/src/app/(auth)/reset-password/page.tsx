@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ResetForm } from "./_components/reset-form";
 
 export default () => (
-  <div className="space-y-6">
+  <div className="w-full max-w-sm space-y-6 rounded-3xl border border-white/12 bg-black/50 p-6 text-left shadow-2xl backdrop-blur-xl sm:p-8">
     <header className="space-y-1">
       <h1 className="font-semibold text-foreground text-xl">
         Rivendos fjalëkalimin

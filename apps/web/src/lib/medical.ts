@@ -49,10 +49,15 @@ export type StudyStatus = (typeof STUDY_STATUS)[number];
 export const RISK_BAND = ["critical", "high", "moderate", "low"] as const;
 export type RiskBand = (typeof RISK_BAND)[number];
 
-export const ROLE = ["hospital_admin", "radiologist", "doctor"] as const;
+export const ROLE = [
+  "hospital_admin",
+  "radiologist",
+  "doctor",
+  "pharmacist",
+] as const;
 export type Role = (typeof ROLE)[number];
 
-export const ORG_TYPE = ["public", "private"] as const;
+export const ORG_TYPE = ["public", "private", "pharmacy"] as const;
 export type OrgType = (typeof ORG_TYPE)[number];
 
 export const REPORT_STATUS = ["draft", "finalized", "amended"] as const;
@@ -126,12 +131,14 @@ export const riskBandRank = (band: RiskBand): number =>
 export const severityLabel = (severity: Severity): string =>
   ({ critical: "Kritik", moderate: "Mesatar", normal: "Normal" })[severity];
 
+// Doctor-facing rubric: everything before the doctor finalizes reads as
+// "waiting"; once finalized it's "Finalizuar" (finalized & analyzed).
 export const studyStatusLabel = (status: StudyStatus): string =>
   ({
-    queued: "Në pritje",
+    queued: "Në radhë",
     analyzing: "Po analizohet",
-    analyzed: "Analizuar",
-    reported: "Raportuar",
+    analyzed: "Në pritje",
+    reported: "Finalizuar",
     archived: "Arkivuar",
   })[status];
 
@@ -149,13 +156,18 @@ export const roleLabel = (role: Role): string =>
     hospital_admin: "Administrator spitali",
     radiologist: "Radiolog",
     doctor: "Mjek",
+    pharmacist: "Farmacist",
   })[role];
 
 export const reportStatusLabel = (status: ReportStatus): string =>
   ({ draft: "Draft", finalized: "Finalizuar", amended: "Ndryshuar" })[status];
 
 export const orgTypeLabel = (type: OrgType): string =>
-  ({ public: "Spital publik", private: "Klinikë private" })[type];
+  ({
+    public: "Spital publik",
+    private: "Klinikë private",
+    pharmacy: "Farmaci",
+  })[type];
 
 export const sexLabel = (sex: Sex): string =>
   ({ male: "Mashkull", female: "Femër", other: "Tjetër" })[sex];

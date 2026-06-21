@@ -1,13 +1,18 @@
 import { unwrapResult } from "@zenncore/utils";
+import * as Authentication from "@/server/app/authentication";
 import * as Doctor from "@/server/app/doctor";
 import { Environment } from "@/server/utils/environment";
 import { DoctorsDataTable } from "./doctors-data-table";
 
 export const DoctorsTable = async () => {
-  const doctors = await unwrapResult(Doctor.list(Environment.SERVER));
+  const [doctors, user] = await Promise.all([
+    unwrapResult(Doctor.list(Environment.SERVER)),
+    unwrapResult(Authentication.getCurrentUser(Environment.SERVER)),
+  ]);
   return (
     <DoctorsDataTable
       rows={doctors.map((doctor) => ({ ...doctor, _id: doctor.id }))}
+      currentUserId={user.id}
     />
   );
 };

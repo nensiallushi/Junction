@@ -5,6 +5,8 @@
  * implementation will mirror with `where: eq(...)` clauses.
  */
 
+import { persist } from "@/server/database/store";
+
 type Identifiable = { id: string };
 
 export type Page<Row> = {
@@ -39,6 +41,7 @@ export const repository = <Row extends Identifiable>(collection: Row[]) => ({
 
   create: async (row: Row): Promise<Row> => {
     collection.push(row);
+    persist();
     return row;
   },
 
@@ -46,6 +49,7 @@ export const repository = <Row extends Identifiable>(collection: Row[]) => ({
     const existing = collection.find((row) => row.id === id);
     if (!existing) return null;
     Object.assign(existing, patch);
+    persist();
     return existing;
   },
 
@@ -53,6 +57,7 @@ export const repository = <Row extends Identifiable>(collection: Row[]) => ({
     const index = collection.findIndex((row) => row.id === id);
     if (index === -1) return false;
     collection.splice(index, 1);
+    persist();
     return true;
   },
 

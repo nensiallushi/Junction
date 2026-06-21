@@ -26,7 +26,7 @@ export const SelectTrigger = ({
   return (
     <SelectPrimitive.Trigger
       className={createClassName(
-        "flex h-10 min-w-36 select-none items-center justify-between gap-3 rounded-md border border-accent-foreground pr-3 pl-3.5 text-base text-gray-900 hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-blue-800 focus-visible:-outline-offset-1 active:bg-gray-100 data-popup-open:bg-gray-100",
+        "flex h-10 min-w-36 select-none items-center justify-between gap-3 rounded-md border border-accent pr-3 pl-3.5 text-base text-foreground hover:bg-card-hover focus-visible:outline-2 focus-visible:outline-primary focus-visible:-outline-offset-1 active:bg-card-hover data-popup-open:bg-card-hover",
         className,
         classList?.trigger,
       )}
@@ -106,14 +106,14 @@ export const SelectPopup = ({
     <>
       <SelectPrimitive.ScrollUpArrow
         className={createClassName(
-          "top-0 z-1 flex h-4 w-full cursor-default items-center justify-center rounded-md bg-[canvas] text-center text-xs before:absolute before:-top-full before:left-0 before:h-full before:w-full before:content-[''] data-[direction=down]:bottom-0 data-[direction=down]:before:-bottom-full",
+          "top-0 z-1 flex h-4 w-full cursor-default items-center justify-center rounded-md bg-card text-center text-xs before:absolute before:-top-full before:left-0 before:h-full before:w-full before:content-[''] data-[direction=down]:bottom-0 data-[direction=down]:before:-bottom-full",
           classList?.arrow?.arrow,
           classList?.arrow?.up,
         )}
       />
       <SelectPrimitive.Popup
         className={createClassName(
-          "group max-h-(--available-height) origin-(--transform-origin) overflow-y-auto rounded-md bg-[canvas] py-1 text-gray-900 shadow-gray-200 shadow-lg outline-1 outline-gray-200 transition-[transform,scale,opacity] data-[side=none]:data-starting-style:scale-100 data-[side=none]:data-starting-style:opacity-100 data-[side=none]:data-starting-style:transition-none data-ending-style:scale-90 data-starting-style:scale-90 data-ending-style:opacity-0 data-starting-style:opacity-0 data-ending-style:transition-none dark:shadow-none dark:outline-gray-300 dark:-outline-offset-1",
+          "group max-h-(--available-height) origin-(--transform-origin) overflow-y-auto rounded-md bg-card py-1 text-foreground shadow-card shadow-lg outline-1 outline-accent -outline-offset-1 transition-[transform,scale,opacity] data-[side=none]:data-starting-style:scale-100 data-[side=none]:data-starting-style:opacity-100 data-[side=none]:data-starting-style:transition-none data-ending-style:scale-90 data-starting-style:scale-90 data-ending-style:opacity-0 data-starting-style:opacity-0 data-ending-style:transition-none",
           className,
           classList?.root,
         )}
@@ -123,7 +123,7 @@ export const SelectPopup = ({
       </SelectPrimitive.Popup>
       <SelectPrimitive.ScrollDownArrow
         className={createClassName(
-          "bottom-0 z-1 flex h-4 w-full cursor-default items-center justify-center rounded-md bg-[canvas] text-center text-xs before:absolute before:-top-full before:left-0 before:h-full before:w-full before:content-[''] data-[direction=down]:bottom-0 data-[direction=down]:before:-bottom-full",
+          "bottom-0 z-1 flex h-4 w-full cursor-default items-center justify-center rounded-md bg-card text-center text-xs before:absolute before:-top-full before:left-0 before:h-full before:w-full before:content-[''] data-[direction=down]:bottom-0 data-[direction=down]:before:-bottom-full",
           classList?.arrow?.arrow,
           classList?.arrow?.down,
         )}
@@ -154,7 +154,7 @@ export const SelectItem = ({
   return (
     <SelectPrimitive.Item
       className={createClassName(
-        "grid min-w-(--anchor-width) cursor-default select-none grid-cols-[0.75rem_1fr] items-center gap-2 py-2 pr-4 pl-2.5 text-sm leading-4 outline-0 data-highlighted:relative data-highlighted:z-0 data-highlighted:text-gray-50 data-highlighted:before:absolute data-highlighted:before:inset-x-1 data-highlighted:before:inset-y-0 data-highlighted:before:z-[-1] data-highlighted:before:rounded-sm data-highlighted:before:bg-gray-900 group-data-[side=none]:min-w-[calc(var(--anchor-width)+1rem)] group-data-[side=none]:pr-12 group-data-[side=none]:text-base group-data-[side=none]:leading-4",
+        "grid min-w-(--anchor-width) cursor-default select-none grid-cols-[0.75rem_1fr] items-center gap-2 py-2 pr-4 pl-2.5 text-foreground text-sm leading-4 outline-0 data-highlighted:relative data-highlighted:z-0 data-highlighted:text-foreground data-highlighted:before:absolute data-highlighted:before:inset-x-1 data-highlighted:before:inset-y-0 data-highlighted:before:z-[-1] data-highlighted:before:rounded-sm data-highlighted:before:bg-card-hover group-data-[side=none]:min-w-[calc(var(--anchor-width)+1rem)] group-data-[side=none]:pr-12 group-data-[side=none]:text-base group-data-[side=none]:leading-4",
         className,
         classList?.item,
       )}

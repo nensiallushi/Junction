@@ -2,6 +2,7 @@
 
 import type { Patient } from "@/server/database/schema";
 import { db } from "@/server/database/store";
+import { purgePatient } from "@/server/utils/cascade";
 import { withAuthentication } from "@/server/utils/context";
 import { repository } from "@/server/utils/repository";
 
@@ -27,16 +28,39 @@ export const paginate = withAuthentication(
     args: { page?: number; query?: string } = {},
   ) => {
     const query = args.query?.trim().toLowerCase() ?? "";
-    return patients.paginate(
-      (patient) =>
-        patient.organizationId === session.organizationId &&
-        (query === "" ||
-          patient.name.toLowerCase().includes(query) ||
-          patient.mrn.toLowerCase().includes(query)),
-      { page: args.page ?? 1, pageSize: 20 },
-    );
+    const matched = (
+      await patients.find(
+        (patient) =>
+          patient.organizationId === session.organizationId &&
+          (query === "" ||
+            patient.name.toLowerCase().includes(query) ||
+            patient.mrn.toLowerCase().includes(query)),
+      )
+    ).sort((a, b) => a.name.localeCompare(b.name));
+
+    const page = args.page ?? 1;
+    const pageSize = 20;
+    const start = (page - 1) * pageSize;
+    return {
+      rows: matched.slice(start, start + pageSize),
+      page,
+      pageSize,
+      total: matched.length,
+      pageCount: Math.max(1, Math.ceil(matched.length / pageSize)),
+    };
   },
   "Patient.paginate",
+);
+
+/** All patients in the org, sorted A–Z — feeds the upload autocomplete. */
+export const list = withAuthentication(
+  async (_environment, session): Promise<Patient[]> => {
+    const rows = await patients.find(
+      (patient) => patient.organizationId === session.organizationId,
+    );
+    return rows.sort((a, b) => a.name.localeCompare(b.name));
+  },
+  "Patient.list",
 );
 
 export const search = withAuthentication(
@@ -70,6 +94,22 @@ export const create = withAuthentication(
       ...data,
     }),
   "Patient.create",
+);
+
+/** Delete a patient and cascade their studies/analyses/reports. Org-scoped. */
+export const destroy = withAuthentication(
+  async (
+    _environment,
+    session,
+    { patient: id }: { patient: string },
+  ): Promise<boolean> => {
+    const patient = await patients.get(id);
+    if (!patient || patient.organizationId !== session.organizationId)
+      return false;
+    await purgePatient(id);
+    return true;
+  },
+  "Patient.destroy",
 );
 
 /**

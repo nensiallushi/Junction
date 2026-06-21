@@ -12,6 +12,7 @@ import {
   HospitalIcon,
   MediscanMark,
   PatientsIcon,
+  PharmacyIcon,
   UploadStudyIcon,
   WorklistIcon,
 } from "@/components/medical-icons";
@@ -30,7 +31,7 @@ const PRIMARY: Item[] = [
   { href: "/dashboard/worklist", label: "Lista e punës", Icon: WorklistIcon },
   { href: "/dashboard/patients", label: "Pacientët", Icon: PatientsIcon },
   { href: "/dashboard/messages", label: "Mesazhet", Icon: ConsultIcon },
-  { href: "/dashboard/upload", label: "Studim i ri", Icon: UploadStudyIcon },
+  { href: "/dashboard/upload", label: "Imazhe të reja", Icon: UploadStudyIcon },
 ];
 
 const ADMIN: Item[] = [
@@ -40,6 +41,11 @@ const ADMIN: Item[] = [
     label: "Organizata",
     Icon: HospitalIcon,
   },
+];
+
+// Pharmacists only see the pharmacy queue — no clinical screens.
+const PHARMACY: Item[] = [
+  { href: "/dashboard/pharmacy", label: "Farmacia", Icon: PharmacyIcon },
 ];
 
 const NavLink = ({ item, active }: { item: Item; active: boolean }) => (
@@ -65,15 +71,19 @@ export const AppNav = ({ user }: { user: Authentication.Type }) => {
   const isActive = (item: Item) =>
     item.exact ? pathname === item.href : pathname.startsWith(item.href);
 
+  const isPharmacist = user.role === "pharmacist";
+  const primary = isPharmacist ? PHARMACY : PRIMARY;
+  const home = isPharmacist ? "/dashboard/pharmacy" : "/dashboard";
+
   return (
     <nav className="hidden w-60 shrink-0 flex-col border-accent border-r bg-background-rich/40 backdrop-blur-xl md:flex">
-      <Link href="/dashboard" className="flex items-center gap-2 px-6 py-6">
+      <Link href={home as Route} className="flex items-center gap-2 px-6 py-6">
         <MediscanMark className="size-8" />
         <span className="font-semibold text-foreground text-lg">Mediscan</span>
       </Link>
 
       <div className="flex flex-1 flex-col gap-1 px-4">
-        {PRIMARY.map((item) => (
+        {primary.map((item) => (
           <NavLink key={item.href} item={item} active={isActive(item)} />
         ))}
 

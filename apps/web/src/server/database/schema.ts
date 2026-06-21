@@ -175,6 +175,27 @@ export const channelMessageSchema = z.object({
   createdAt: z.string(),
 });
 
+/**
+ * A prescription a doctor sends to the pharmacy network. Deliberately GENERIC
+ * (e.g. "Kortikosteroid") — never brand-specific. Patient + doctor names are
+ * denormalized so the cross-org pharmacy view needs no clinical joins and sees
+ * only names + medication + issuer.
+ */
+export const prescriptionSchema = z.object({
+  id: z.string(),
+  organizationId: z.string(),
+  patientId: z.string(),
+  patientName: z.string(),
+  doctorId: z.string(),
+  doctorName: z.string(),
+  studyId: z.string().nullable(),
+  medication: z.string(),
+  note: z.string(),
+  createdAt: z.string(),
+  // pharmacist checks this once the patient has received the medication.
+  dispensed: z.boolean(),
+});
+
 /** Direct (1:1) message between two clinicians of the same organization. */
 export const directMessageSchema = z.object({
   id: z.string(),
@@ -183,6 +204,16 @@ export const directMessageSchema = z.object({
   toId: z.string(),
   body: z.string(),
   createdAt: z.string(),
+});
+
+/**
+ * Sign-in credential, keyed by doctor id (`id` = the doctor's id). Plaintext —
+ * mock auth only; real auth hashes these. Persisted so registered accounts can
+ * sign in again after a restart.
+ */
+export const credentialSchema = z.object({
+  id: z.string(),
+  password: z.string(),
 });
 
 export type Geometry = z.infer<typeof geometrySchema>;
@@ -197,5 +228,7 @@ export type RiskScoreHistory = z.infer<typeof riskScoreHistorySchema>;
 export type Report = z.infer<typeof reportSchema>;
 export type Consult = z.infer<typeof consultSchema>;
 export type Message = z.infer<typeof messageSchema>;
+export type Prescription = z.infer<typeof prescriptionSchema>;
+export type Credential = z.infer<typeof credentialSchema>;
 export type ChannelMessage = z.infer<typeof channelMessageSchema>;
 export type DirectMessage = z.infer<typeof directMessageSchema>;

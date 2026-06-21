@@ -12,6 +12,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import { age, formatDate, initials, sexLabel } from "@/lib/medical";
 import type * as Patient from "@/server/app/patient";
+import { DeletePatientButton } from "./delete-patient-button";
 
 type Row = Patient.Type & { _id: string };
 
@@ -57,16 +58,22 @@ const columns: ColumnDef<Row>[] = [
     ),
   },
   {
-    id: "open",
+    id: "actions",
     header: "",
     cell: ({ row }) => (
-      <Link
-        href={`/dashboard/patients/${row.original.id}` as Route}
-        className="flex size-8 items-center justify-center rounded-full text-foreground-dimmed transition-colors hover:bg-accent hover:text-foreground"
-        aria-label="Open patient"
-      >
-        <ChevronRightIcon className="size-4" />
-      </Link>
+      <div className="flex items-center justify-end gap-1">
+        <DeletePatientButton
+          patient={row.original.id}
+          name={row.original.name}
+        />
+        <Link
+          href={`/dashboard/patients/${row.original.id}` as Route}
+          className="flex size-8 items-center justify-center rounded-full text-foreground-dimmed transition-colors hover:bg-accent hover:text-foreground"
+          aria-label="Open patient"
+        >
+          <ChevronRightIcon className="size-4" />
+        </Link>
+      </div>
     ),
   },
 ];

@@ -6,6 +6,10 @@ import { StatusPill } from "@/components/severity";
 import { formatDate, modalityLabel } from "@/lib/medical";
 import * as Study from "@/server/app/study";
 import { Environment } from "@/server/utils/environment";
+import {
+  DoctorReport,
+  DoctorReportSkeleton,
+} from "./_components/doctor-report";
 import { ViewerActionBar } from "./_components/viewer-action-bar";
 import { ViewerData } from "./_components/viewer-data";
 import { ViewerSkeleton } from "./_components/viewer-skeleton";
@@ -34,9 +38,13 @@ export default async ({ params }: { params: Promise<{ study: string }> }) => {
         </p>
       </header>
 
-      <div className="flex-1 overflow-y-auto p-4 md:p-6">
+      <div className="flex-1 space-y-6 overflow-y-auto p-4 md:p-6">
         <Suspense fallback={<ViewerSkeleton />}>
           <ViewerData study={study} />
+        </Suspense>
+
+        <Suspense fallback={<DoctorReportSkeleton />}>
+          <DoctorReport study={study.id} />
         </Suspense>
       </div>
 

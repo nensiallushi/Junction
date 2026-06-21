@@ -2,6 +2,16 @@
   "$schema": "./node_modules/turbo/schema.json",
   "ui": "tui",
   "globalPassThroughEnv": ["APP_VARIANT", "EAS_BUILD"],
+  "globalEnv": [
+    "CXR_SERVICE_URL",
+    "CXR_THRESHOLD",
+    "IMAGING_SERVICE_URL",
+    "MRI_BRAIN_MODEL",
+    "US_BREAST_MODEL",
+    "CT_CHEST_MODEL",
+    "MEDISCAN_DATA_FILE",
+    "ANTHROPIC_API_KEY"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

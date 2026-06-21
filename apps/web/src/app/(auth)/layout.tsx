@@ -2,137 +2,77 @@ import Image from "next/image";
 import type { PropsWithChildren } from "react";
 import { MediscanMark } from "@/components/medical-icons";
 
-// Soft oval mask → fades the rectangular photo edges to nothing.
-const MASK = "radial-gradient(62% 62% at 50% 48%, #000 38%, transparent 76%)";
-// Crush the dark photo background to true black (so screen-blend removes it)
-// and pop the neon.
-const FX = "contrast(1.45) brightness(1.18) saturate(1.3)";
-
 export default ({ children }: PropsWithChildren) => (
-  <div className="relative min-h-screen w-full overflow-hidden">
-    {/* ───────────── animated aurora background (full page) ───────────── */}
-    <div
-      aria-hidden
-      className="absolute inset-0"
-      style={{
-        background:
-          "linear-gradient(135deg, #181d45 0%, #241a52 48%, #2d1f50 100%)",
-      }}
-    >
-      {/* drifting color glows — brighter, lighter palette */}
-      <div className="-left-32 absolute top-10 size-[36rem] animate-drift rounded-full bg-violet-500/45 blur-3xl" />
-      <div
-        className="absolute top-1/2 left-1/4 size-[32rem] animate-drift rounded-full bg-blue-500/40 blur-3xl"
-        style={{ animationDelay: "-6s", animationDuration: "26s" }}
-      />
-      <div
-        className="absolute top-12 right-10 size-[34rem] animate-drift rounded-full bg-fuchsia-500/40 blur-3xl"
-        style={{ animationDelay: "-12s" }}
-      />
-      <div
-        className="absolute right-1/3 bottom-0 size-[34rem] animate-drift rounded-full bg-cyan-400/35 blur-3xl"
-        style={{ animationDelay: "-3s", animationDuration: "30s" }}
-      />
-      <div
-        className="-bottom-20 absolute left-1/4 size-[30rem] animate-drift rounded-full bg-amber-400/25 blur-3xl"
-        style={{ animationDelay: "-18s" }}
+  <div className="relative flex min-h-screen w-full flex-col bg-[#070b16] text-white">
+    {/* ───── full-bleed background ───── */}
+    <div aria-hidden className="absolute inset-0 overflow-hidden">
+      <Image
+        src="/login/background.png"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-center"
       />
 
-      {/* floating X-ray motifs — background removed via contrast-crush + screen
-          blend, edges dissolved with a soft mask, each drifting on its own clock */}
+      {/* top + bottom darkening so the logo and hero text stay legible */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#070b16]/85 via-[#070b16]/20 to-[#070b16]/95" />
+      {/* gentle scrim behind the hero */}
       <div
-        className="absolute top-[6%] right-[-3%] h-[58%] w-[40%] animate-float-slow mix-blend-screen"
-        style={{ maskImage: MASK, WebkitMaskImage: MASK }}
-      >
-        <Image
-          src="/login/ribcage.jpg"
-          alt=""
-          fill
-          sizes="42vw"
-          className="object-contain"
-          style={{ filter: FX, opacity: 0.7 }}
-        />
-      </div>
-      <div
-        className="absolute top-[-8%] left-[-7%] h-[48%] w-[40%] animate-float-slow mix-blend-screen"
+        className="absolute inset-0"
         style={{
-          animationDelay: "-9s",
-          animationDuration: "23s",
-          maskImage: MASK,
-          WebkitMaskImage: MASK,
+          background:
+            "radial-gradient(ellipse 55% 48% at 50% 50%, rgba(7,11,22,0.55), transparent 72%)",
         }}
-      >
-        <Image
-          src="/login/hand.jpg"
-          alt=""
-          fill
-          sizes="40vw"
-          className="object-contain"
-          style={{ filter: FX, opacity: 0.62 }}
-        />
-      </div>
+      />
+      {/* edge vignette */}
       <div
-        className="absolute bottom-[-10%] right-[16%] h-[50%] w-[34%] animate-float-slow mix-blend-screen"
+        className="absolute inset-0"
         style={{
-          animationDelay: "-15s",
-          animationDuration: "27s",
-          maskImage: MASK,
-          WebkitMaskImage: MASK,
+          background:
+            "radial-gradient(125% 95% at 50% 6%, transparent 38%, rgba(7,11,22,0.8) 100%)",
         }}
-      >
-        <Image
-          src="/login/hero.jpg"
-          alt=""
-          fill
-          sizes="34vw"
-          className="object-contain"
-          style={{ filter: FX, opacity: 0.6 }}
-        />
-      </div>
+      />
 
-      {/* soft veil to settle contrast */}
-      <div className="absolute inset-0 bg-[#10112e]/30" />
+      {/* blue ambient glow — DESIGN.md §9 */}
+      <div className="absolute -top-32 left-1/2 size-[42rem] -translate-x-1/2 rounded-full bg-[#1a3a8f]/30 blur-[120px]" />
+      <div className="absolute -bottom-40 -left-24 size-[34rem] animate-pulse rounded-full bg-[#3B4EE8]/20 blur-[120px] [animation-duration:8s]" />
+      <div className="absolute top-1/3 -right-24 size-[30rem] animate-pulse rounded-full bg-[#4B5EF8]/15 blur-[120px] [animation-duration:11s]" />
     </div>
 
-    {/* ───────────── content ───────────── */}
-    <div className="relative z-10 grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
-      {/* brand + headline (desktop) */}
-      <div className="hidden min-h-screen flex-col justify-between p-10 lg:flex xl:p-14">
-        <div className="flex items-center gap-2">
-          <MediscanMark className="size-8" />
-          <span className="font-semibold text-lg text-white">Mediscan</span>
+    {/* ───── content ───── */}
+    <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6">
+      <header className="flex items-center justify-between py-6">
+        <div className="flex items-center gap-2.5">
+          <MediscanMark className="size-9" />
+          <span className="font-semibold text-lg tracking-tight">Mediscan</span>
         </div>
+      </header>
 
-        <div className="max-w-xl animate-fade-up">
-          <p className="mb-4 font-medium text-white/65 text-xs uppercase tracking-[0.25em]">
-            Spitali Nënë Tereza
-          </p>
-          <h1 className="bg-gradient-to-br from-white via-violet-100 to-cyan-200 bg-clip-text font-semibold text-5xl text-transparent leading-[1.05] xl:text-6xl">
-            Zgjidhje të shpejta shëndetësore për të gjithë
-          </h1>
-          <p className="mt-6 max-w-md text-sm text-white/70 leading-relaxed">
-            Imazheri diagnostike me AI — lexime të asistuara, listë e renditur
-            sipas urgjencës dhe bashkëpunim mes mjekëve, me përkushtim në çdo
-            sekondë që ka rëndësi.
-          </p>
-        </div>
+      <div className="flex flex-1 flex-col justify-center pt-6 pb-12 md:pt-10">
+        <div className="grid w-full items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+          {/* left — hero copy, centered so the badge sits over the headline */}
+          <div className="text-center">
+            <span className="mb-5 inline-flex animate-fade-up items-center gap-2 rounded-pill border border-white/15 bg-white/5 px-4 py-1.5 text-white/75 text-xs backdrop-blur-sm">
+              <span className="size-1.5 rounded-full bg-[#4B5EF8]" />
+              Imazheri diagnostike e mbështetur nga AI
+            </span>
 
-        <div className="flex flex-wrap gap-x-8 gap-y-2 text-white/55 text-xs">
-          <span>(Mjekë ekspertë)</span>
-          <span>(Diagnostikë e shpejtë)</span>
-          <span>(Ekspertizë e besueshme)</span>
-        </div>
-      </div>
+            <h1 className="animate-fade-up font-bold text-4xl tracking-tight [animation-delay:60ms] md:text-6xl md:leading-[1.07]">
+              Zgjidhje të shpejta shëndetësore për të gjithë
+            </h1>
 
-      {/* glass form card */}
-      <div className="flex min-h-screen items-center justify-center p-6">
-        <div className="w-full max-w-sm animate-fade-up">
-          <div className="mb-8 flex items-center justify-center gap-2 lg:hidden">
-            <MediscanMark className="size-8" />
-            <span className="font-semibold text-lg text-white">Mediscan</span>
+            <p className="mx-auto mt-5 max-w-md animate-fade-up text-base text-white/65 leading-relaxed [animation-delay:120ms]">
+              Diagnostikë e avancuar dhe kujdes i përkushtuar me saktësi — sepse
+              në situata kritike, çdo sekondë ka rëndësi.
+            </p>
           </div>
-          <div className="rounded-3xl border border-white/15 bg-background/50 p-6 shadow-2xl backdrop-blur-2xl sm:p-8">
-            {children}
+
+          {/* right — sign-in / form */}
+          <div className="flex w-full animate-fade-up justify-center [animation-delay:180ms]">
+            <div className="flex w-full max-w-sm justify-center">
+              {children}
+            </div>
           </div>
         </div>
       </div>

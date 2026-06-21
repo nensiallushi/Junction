@@ -1,7 +1,13 @@
 import { cn, unwrapResult } from "@zenncore/utils";
-import type { ReactNode } from "react";
+import type { ComponentType, CSSProperties, ReactNode } from "react";
+import {
+  PatientsIcon,
+  StudiesIcon,
+  WorklistIcon,
+} from "@/components/medical-icons";
 import { StudyListRow, StudyRowEmpty } from "@/components/study-row";
 import * as Authentication from "@/server/app/authentication";
+import * as Patient from "@/server/app/patient";
 import * as Study from "@/server/app/study";
 import { Environment } from "@/server/utils/environment";
 
@@ -139,4 +145,108 @@ export const SectionSkeleton = ({ title }: { title: string }) => (
       ))}
     </div>
   </section>
+);
+
+// ── Stat metrics row ──────────────────────────────────────────────────────
+
+const StatCard = ({
+  label,
+  value,
+  color,
+  Icon,
+  delay,
+}: {
+  label: string;
+  value: number;
+  color: string;
+  Icon: ComponentType<{ className?: string; style?: CSSProperties }>;
+  delay: number;
+}) => (
+  <div
+    className="relative animate-fade-up overflow-hidden rounded-card border border-accent bg-card/70 p-4 shadow-card transition-colors hover:border-accent-rich"
+    style={{ animationDelay: `${delay}ms` }}
+  >
+    <div
+      className="-top-8 -right-8 absolute size-24 rounded-full blur-2xl"
+      style={{ backgroundColor: color, opacity: 0.18 }}
+    />
+    <div className="relative flex items-center gap-3">
+      <span
+        className="flex size-11 shrink-0 items-center justify-center rounded-icon"
+        style={{ backgroundColor: `${color}22` }}
+      >
+        <Icon className="size-5" style={{ color }} />
+      </span>
+      <div className="min-w-0">
+        <p className="font-semibold text-2xl text-foreground tabular-nums">
+          {value}
+        </p>
+        <p className="truncate text-caption text-xs">{label}</p>
+      </div>
+    </div>
+  </div>
+);
+
+export const Stats = async () => {
+  const [studies, patients] = await Promise.all([
+    unwrapResult(Study.worklist(Environment.SERVER, {})),
+    unwrapResult(Patient.paginate(Environment.SERVER, {})),
+  ]);
+
+  const urgent = studies.filter(
+    (study) => study.riskBand === "critical" || study.riskBand === "high",
+  ).length;
+
+  const items = [
+    {
+      label: "Studime gjithsej",
+      value: studies.length,
+      color: "#5b8cff",
+      Icon: StudiesIcon,
+    },
+    {
+      label: "Raste urgjente",
+      value: urgent,
+      color: "#ff5f6d",
+      Icon: WorklistIcon,
+    },
+    {
+      label: "Pacientë",
+      value: patients.total,
+      color: "#43e08f",
+      Icon: PatientsIcon,
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+      {items.map((item, index) => (
+        <StatCard
+          key={item.label}
+          label={item.label}
+          value={item.value}
+          color={item.color}
+          Icon={item.Icon}
+          delay={index * 70}
+        />
+      ))}
+    </div>
+  );
+};
+
+export const StatsSkeleton = () => (
+  <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+    {[0, 1, 2].map((card) => (
+      <div
+        key={card}
+        className="flex items-center gap-3 rounded-card border border-accent bg-card/70 p-4 shadow-card"
+      >
+        <div className="size-11 shrink-0 animate-pulse rounded-icon bg-accent" />
+        <div className="flex-1 space-y-2">
+          <div className="h-5 w-10 animate-pulse rounded bg-accent" />
+          <div className="h-2 w-16 animate-pulse rounded bg-accent" />
+        </div>
+      </div>
+    ))}
+  </div>
 );

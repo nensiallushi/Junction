@@ -7,6 +7,7 @@ import * as Analysis from "@/server/app/analysis";
 import * as Report from "@/server/app/report";
 import * as Study from "@/server/app/study";
 import { Environment } from "@/server/utils/environment";
+import { PrescriptionSection } from "./_components/prescription-section";
 import { ReportForm } from "./_components/report-form";
 
 export default async ({ params }: { params: Promise<{ study: string }> }) => {
@@ -34,9 +35,12 @@ export default async ({ params }: { params: Promise<{ study: string }> }) => {
 
       <ReportForm
         study={id}
+        patient={study.patientId}
         initialBody={report?.body ?? ""}
         aiSummary={read?.analysis.summary ?? []}
       />
+
+      <PrescriptionSection patient={study.patientId} />
     </div>
   );
 };
